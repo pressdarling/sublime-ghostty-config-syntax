@@ -1,0 +1,5 @@
+{
+  "enable_completions": true,
+  "assign_syntax_on_open": true,
+  "diagnostics_enabled": false
+}
