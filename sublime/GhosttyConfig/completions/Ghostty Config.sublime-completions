@@ -1,0 +1,11 @@
+{
+  "scope": "source.ghostty",
+  "completions": [
+    { "trigger": "font-family", "contents": "font-family = ${1:JetBrains Mono}" },
+    { "trigger": "font-size", "contents": "font-size = ${1:14}" },
+    { "trigger": "theme", "contents": "theme = ${1:auto}" },
+    { "trigger": "keybind", "contents": "keybind = ${1:ctrl+shift+c=copy_to_clipboard}" },
+    { "trigger": "true", "contents": "true" },
+    { "trigger": "false", "contents": "false" }
+  ]
+}
