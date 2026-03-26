@@ -58,9 +58,13 @@ class GhosttyCompletionEngine:
         elif option_type == "enum":
             values = option.get("enum", [])
         elif option_type == "color":
-            values = ["#", "black", "white", "transparent", "cell-foreground", "cell-background"]
+            color_type_info = self.schema.get("types", {}).get("color", {})
+            values = ["#"] + color_type_info.get("namedValues", [])
         elif option_type == "keybind":
-            values = ["ctrl+", "shift+", "alt+", "super+", "clear"]
+            keybind_type_info = self.schema.get("types", {}).get("keybind", {})
+            modifiers = [f"{modifier}+" for modifier in keybind_type_info.get("modifiers", [])]
+            prefixes = [f"{prefix}:" for prefix in keybind_type_info.get("prefixes", [])]
+            values = modifiers + prefixes + ["clear"]
         else:
             values = option.get("examples", [])
 

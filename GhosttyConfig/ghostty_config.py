@@ -3,10 +3,11 @@ import os
 import sublime
 import sublime_plugin
 
-from lib.completion import GhosttyCompletionEngine
-from lib.schema import load_schema
+from GhosttyConfig.lib.completion import GhosttyCompletionEngine
+from GhosttyConfig.lib.schema import load_schema
 
 PACKAGE_PATH = os.path.dirname(__file__)
+SETTINGS_FILE = "Ghostty Config.sublime-settings"
 SYNTAX = "Packages/GhosttyConfig/Ghostty Config.tmLanguage"
 
 
@@ -14,43 +15,42 @@ def _normalize(path):
     return os.path.normcase(os.path.normpath(path))
 
 
+def _open_config_paths():
+    settings = sublime.load_settings(SETTINGS_FILE)
+    paths = settings.get("ghostty_open_config_paths", [])
+    if not isinstance(paths, list):
+        return []
+    return [os.path.expanduser(path) for path in paths if isinstance(path, str) and path]
+
+
 def _ghostty_candidates():
-    home = os.path.expanduser("~")
-    return {
-        _normalize(os.path.join(home, ".config", "ghostty", "config")),
-        _normalize(
-            os.path.join(
-                home,
-                "Library",
-                "Application Support",
-                "com.mitchellh.ghostty",
-                "config",
-            )
-        ),
-    }
+    return {_normalize(path) for path in _open_config_paths()}
 
 
 def is_ghostty_config_path(path: str) -> bool:
     if not path:
         return False
     normalized = _normalize(path)
-    return normalized in _ghostty_candidates() or normalized.endswith(".ghostty")
+    return normalized in _GHOSTTY_CANDIDATES or normalized.endswith(".ghostty")
 
 
 _SCHEMA = None
 _COMPLETIONS = None
+_GHOSTTY_CANDIDATES = set()
 
 
 def plugin_loaded():
-    global _SCHEMA, _COMPLETIONS
+    global _SCHEMA, _COMPLETIONS, _GHOSTTY_CANDIDATES
     _SCHEMA = load_schema(PACKAGE_PATH)
     _COMPLETIONS = GhosttyCompletionEngine(_SCHEMA)
+    _GHOSTTY_CANDIDATES = _ghostty_candidates()
 
 
 class GhosttyConfigListener(sublime_plugin.ViewEventListener):
     @classmethod
     def is_applicable(cls, settings):
-        return True
+        syntax = settings.get("syntax") or ""
+        return syntax == SYNTAX or "ghostty" in syntax.lower()
 
     def on_load_async(self):
         self._maybe_assign()
@@ -79,11 +79,8 @@ class GhosttyConfigListener(sublime_plugin.ViewEventListener):
 
 class GhosttyOpenConfigCommand(sublime_plugin.WindowCommand):
     def run(self):
-        candidates = [
-            os.path.expanduser("~/.config/ghostty/config"),
-            os.path.expanduser("~/Library/Application Support/com.mitchellh.ghostty/config"),
-        ]
-        existing = [p for p in candidates if os.path.exists(p)]
+        candidates = _open_config_paths()
+        existing = [path for path in candidates if os.path.exists(path)]
 
         if len(existing) == 1:
             self.window.open_file(existing[0])
