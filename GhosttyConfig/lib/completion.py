@@ -3,7 +3,7 @@ from .parser import is_in_key_position, is_in_value_position, parse_line
 
 
 class GhosttyCompletionEngine:
-    def __init__(self, schema):
+    def __init__(self, schema) -> None:
         self.schema = schema
 
     def completions_for(self, line_text: str, cursor_col: int):
@@ -24,11 +24,12 @@ class GhosttyCompletionEngine:
     def _key_completions(self, text_before_cursor: str):
         prefix = text_before_cursor.strip().lower()
         items = []
+        repeatable_keys = set(self.schema.get("repeatableKeys", []))
         for key, option in self.schema.get("options", {}).items():
             if prefix and prefix not in key.lower():
                 continue
             details = option.get("type", "string")
-            if option.get("repeatable"):
+            if option.get("repeatable") or key in repeatable_keys:
                 details += " (repeatable)"
             items.append(
                 sublime.CompletionItem(

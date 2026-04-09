@@ -223,7 +223,7 @@
       "patterns": [
         {
           "name": "constant.other.color.hex.ghostty",
-          "match": "#[0-9a-fA-F]{3,8}\\b"
+          "match": "#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\\b"
         },
         {
           "name": "constant.other.color.hex.ghostty",
@@ -263,7 +263,7 @@
       "patterns": [
         {
           "name": "string.other.path.ghostty",
-          "match": "\\b(/[^\\s=]*|\\./[^\\s=]*|\\?[^\\s=]*|~[^\\s=]*)\\b"
+          "match": "(/[^\\s=]*|\\./[^\\s=]*|\\?[^\\s=]*|~[^\\s=]*)"
         }
       ]
     },

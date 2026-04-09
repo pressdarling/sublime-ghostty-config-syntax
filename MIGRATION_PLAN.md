@@ -8,6 +8,7 @@ This repository should be split into two layers:
 ## File-by-file migration map
 
 ### Keep as source-of-truth (shared knowledge)
+
 - `syntaxes/ghostty-config-syntax.tmLanguage.json`
 - `schema/ghostty-config-syntax.schema.json`
 - `src/parser/configParser.ts` (behavioral reference for Python port)
@@ -16,6 +17,7 @@ This repository should be split into two layers:
 - `src/commands/openConfig.ts` (behavioral reference for command parity)
 
 ### New Sublime package scaffold
+
 - `GhosttyConfig/Ghostty Config.tmLanguage`
 - `GhosttyConfig/schema/ghostty-config-syntax.schema.json`
 - `GhosttyConfig/ghostty_config.py`
@@ -29,6 +31,7 @@ This repository should be split into two layers:
 ## First pass deliverables in this branch
 
 ### 1) Syntax highlighting (ship immediately)
+
 - Reuse the existing TextMate grammar as `Ghostty Config.tmLanguage`.
 - Use path-based syntax assignment in plugin code for:
   - `~/.config/ghostty/config`
@@ -36,12 +39,14 @@ This repository should be split into two layers:
   - `*.ghostty`
 
 ### 2) Parser port (Python)
+
 - `GhosttyConfig/lib/parser.py`
   - Implements `parse_line()` and `parse_document()` with the same key/value and comment behavior as TS.
   - Preserves key and value ranges for feature consumers.
   - Exposes `is_in_key_position()` and `is_in_value_position()` for completion routing.
 
 ### 3) Completion port (Python + Sublime API)
+
 - `GhosttyConfig/lib/completion.py`
   - Implements schema-aware key and value suggestions.
   - Routes by key vs value cursor position.
@@ -50,6 +55,7 @@ This repository should be split into two layers:
   - Adds static baseline snippets for common keys.
 
 ### 4) Open-config command (WindowCommand)
+
 - `GhosttyConfig/ghostty_config.py`
   - Adds `ghostty_open_config` command.
   - Opens existing config path if found.

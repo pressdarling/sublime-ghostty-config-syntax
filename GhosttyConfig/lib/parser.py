@@ -42,8 +42,9 @@ def parse_line(line: str, line_number: int) -> ParsedLine:
 
         equals_index = line.find("=")
         after_equals = line[equals_index + 1 :]
-        value_start = equals_index + 1 + (len(after_equals) - len(after_equals.lstrip()))
-        value_end = len(line.rstrip())
+        leading_ws = len(after_equals) - len(after_equals.lstrip())
+        value_start = equals_index + 1 + leading_ws
+        value_end = max(value_start, len(line.rstrip()))
 
         return ParsedLine(
             type="keyValue",
