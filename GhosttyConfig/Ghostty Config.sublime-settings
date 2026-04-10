@@ -1,0 +1,6 @@
+{
+  "ghostty_open_config_paths": [
+    "~/.config/ghostty/config",
+    "~/Library/Application Support/com.mitchellh.ghostty/config"
+  ]
+}

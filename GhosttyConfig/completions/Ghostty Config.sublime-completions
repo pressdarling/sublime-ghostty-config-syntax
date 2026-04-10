@@ -1,0 +1,9 @@
+{
+  "scope": "source.ghostty",
+  "completions": [
+    { "trigger": "font-family", "contents": "font-family = ${1:FiraCode Nerd Font}" },
+    { "trigger": "theme", "contents": "theme = ${1:auto}" },
+    { "trigger": "background", "contents": "background = ${1:#1e1e2e}" },
+    { "trigger": "confirm-close-surface", "contents": "confirm-close-surface = ${1:true}" }
+  ]
+}
