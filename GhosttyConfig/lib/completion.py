@@ -4,9 +4,28 @@ from .parser import is_in_key_position, is_in_value_position, parse_line
 
 class GhosttyCompletionEngine:
     def __init__(self, schema) -> None:
+        """
+        Initialise the completion engine with the configuration schema used to generate completion items.
+        
+        Parameters:
+            schema (dict): Schema defining available configuration options and metadata. Expected keys include:
+                - "options": mapping of option names to their metadata (type, description, examples, repeatable, enum, etc.).
+                - "repeatableKeys": list of keys treated as repeatable.
+                - "types": optional type-specific data (for example, a "color" type with "namedValues").
+        """
         self.schema = schema
 
     def completions_for(self, line_text: str, cursor_col: int):
+        """
+        Provide Sublime Text completion items for a configuration line at a given cursor column.
+        
+        Parameters:
+            line_text (str): The full text of the current line.
+            cursor_col (int): The cursor column index within `line_text` (0-based).
+        
+        Returns:
+            list: A list of `sublime.CompletionItem` objects for the current key or value context; an empty list when the line is a comment, the cursor is not in a key/value position, or the key is not recognised.
+        """
         text_before_cursor = line_text[:cursor_col]
         if text_before_cursor.strip().startswith("#"):
             return []
@@ -22,6 +41,15 @@ class GhosttyCompletionEngine:
         return []
 
     def _key_completions(self, text_before_cursor: str):
+        """
+        Generate completion items for configuration keys based on the text immediately before the cursor.
+        
+        Parameters:
+            text_before_cursor (str): The substring of the current line up to the cursor; used to derive a lowercase prefix for filtering available keys.
+        
+        Returns:
+            list: A list of sublime.CompletionItem objects for matching schema keys. Each item triggers the key and inserts "<key> = " as the completion, with the annotation set to the option's type (appending " (repeatable)" when applicable) and details set to the option's description.
+        """
         prefix = text_before_cursor.strip().lower()
         items = []
         repeatable_keys = set(self.schema.get("repeatableKeys", []))
@@ -42,6 +70,18 @@ class GhosttyCompletionEngine:
         return items
 
     def _value_completions(self, key: str, text_before_cursor: str):
+        """
+        Produce completion items for possible values of a configuration `key` using the engine's schema and the text before the cursor.
+        
+        Candidates are selected from the schema according to the option's type (boolean, enum, colour names or '#', keybind modifiers/prefixes or 'clear', or example values) and filtered by any partial value found after the first '=' in `text_before_cursor`.
+        
+        Parameters:
+            key (str): The configuration key whose values are being completed.
+            text_before_cursor (str): The line text up to the cursor position; used to derive a partial value after '='.
+        
+        Returns:
+            list: A list of sublime.CompletionItem objects for matching value candidates; returns an empty list if the key is not present in the schema or no candidates match.
+        """
         option = self.schema.get("options", {}).get(key)
         if not option:
             return []
